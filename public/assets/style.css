@@ -1,0 +1,73 @@
+/**
+* Custom Style for RoboFigth
+ */
+
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Jost:wght@400;500;600;700&family=Karla:wght@400;500;600&display=swap');
+
+
+:root {
+    --color-secondary: #5bc5d1;
+    --color-orange: #f89623;
+    --color-cyan: #1d818d;
+    --color-white: #ffffff;
+}
+
+ button[data-selected="1"],
+ button[data-selected="1"]:focus,
+ button[data-selected="1"]:hover,
+ button[data-selected="1"]:active{
+     background: red;
+     color: white;
+     border-color: red;
+ }
+
+ .form-group{
+     margin-bottom: 12px;
+ }
+.fighter-box{
+    position: fixed;
+    background-image: url("/image/mortal.jpeg");
+    background-position: center;
+    background-size: cover;
+    visibility: hidden;
+    opacity: 0;
+    top:0;
+    width: 100%;
+    height: 100%;
+    background-color: rgb(0 0 0 / 38%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: .5s;
+    z-index: 9999;
+}
+.fighter-box.show{
+    visibility: visible;
+    opacity: 1;
+}
+.fighter-1, .fighter-2{
+    text-align: center;
+}
+.fighter-1 img, .fighter-2 img{
+    width: 350px;
+    max-width: 80%;
+    margin: 0.5rem;
+    border-radius: 12px;
+}
+
+.robo-name{
+    font-size: 23px;
+    color: #ffffff;
+    background: #ff454573;
+    margin: 0.5rem;
+    border-radius: 6px;
+}
+
+span.input-error {
+    color: red;
+    font-weight: 600;
+    font-size: 80%;
+}
+

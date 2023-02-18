@@ -1,0 +1,164 @@
+{% extends '/layout/app.twig' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-end py-3">
+        <div class="col-md-8 mx-auto">
+            <a href="/dokumentation/dok" class="btn btn-primary" target="_blank">Dokumentáció</a>
+            <a href="/dokumentation/task" class="btn btn-primary" target="_blank">Feladat</a>
+        </div>
+    </div>
+    <div class="row text-center mb-3">
+        <h1 class="my-3">RobotFight</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+
+            <div class="table-responsive">
+                <div class="card">
+                    <div class="card-header">
+                        <a href="/robot/add" class="btn btn-success mb-3">Hozzáad</a><button class="btn btn-primary float-end" id="fight-btn">START FIGHT</button>
+                    </div>
+                    {% if robots %}
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>Név</th>
+                                <th>Típus</th>
+                                <th class="text-center">Erősség</th>
+                                <th class="text-center">Művelet</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            {% for robot in robots %}
+                                <tr>
+                                    <td>
+                                        <div><b>{{ robot.name }}</b></div>
+                                        <small class="d-block">{{ robot.created_at }}</small>
+                                    </td>
+                                    <td>{{ robot.type }}</td>
+                                    <td class="text-center"><span class="badge bg-danger">{{ robot.power }}</span></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-primary btn-select"  data-id="{{ robot.id }}" data-selected="0" data-name="{{ robot.name }}">Harcba küld</button>
+                                        <a class="btn btn-success btn-sm" href="/robot/edit/{{ robot.id }}">Szerkeszt</a>
+                                        <a class="btn btn-danger btn-sm btn-delete" href="/robot/delete/{{ robot.id }}">Töröl</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <h3 class="text-center py-5">A harchoz vegyél fel legalább 2 robotot</h3>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+    
+    <div class="fighter-box">
+        <h1 class="text-white">Everest RoboFight World Cup</h1>
+        <button class="btn btn-primary" onclick="closeFighterBox()">Bezár</button>
+        <div class="d-flex">
+            <div class="fighter-1">
+                <img src="/image/robo.jpg" alt="">
+                <div class="robo-name text-center"></div>
+            </div>
+            <div class="fighter-2">
+                <img src="/image/robo.jpg" alt="">
+                <div class="robo-name text-center"></div>
+            </div>
+        </div>
+        <div class="text-center">
+            <button class="btn btn-primary" onclick="$('#fight-btn').trigger('click')">Újra</button>
+        </div>
+    </div>
+
+
+    <script>
+
+        $('.btn-delete').on('click',function (e){
+            e.preventDefault();
+
+            if(confirm('Biztos törlöd a robit?')){
+                location = $(this).attr('href')
+            }
+            return false;
+        })
+        $('body').delegate('button.btn-select','click',function (){
+            if($(this).attr('data-selected') === '0'){
+                if($('button[data-selected="1"]').length > 1){
+                    alert('Maximum 2 robotot választhatsz')
+                }else{
+                    $(this).html('Visszahív')
+                    $(this).attr('data-selected','1')
+                }
+
+            }else{
+                $(this).html('Harcba küld')
+                $(this).attr('data-selected','0')
+            }
+        })
+
+
+        $('#fight-btn').on('click',function (){
+
+            var ids = []
+            $('button[data-selected="1"]').each(function (){
+                ids.push($(this).data('id'))
+            })
+
+            if (ids.length == 2){
+                setFighterBox(ids)
+                goFight(ids)
+
+            }else{
+                alert('Válassz 2 robotot')
+            }
+        })
+
+        function closeFighterBox(){
+            $('.fighter-box').removeClass('show')
+            clearForm()
+        }
+        function clearForm(){
+            $('button[data-selected="1"]').attr('data-selected','0').html('Harcba küld')
+        }
+
+        function setFighterBox(ids){
+            // Set fighters box
+            $('.fighter-box').addClass('show')
+            $('.fighter-box').find('img').attr('src','/image/robo_fight.gif')
+            $('.robo-name').html('')
+            $('.fighter-1').attr('data-fighter','fighter' + ids[0])
+            $('.fighter-1 .robo-name').html($('[data-id="'+ids[0]+'"]').data('name'))
+            $('.fighter-2').attr('data-fighter','fighter' + ids[1])
+            $('.fighter-2 .robo-name').html($('[data-id="'+ids[1]+'"]').data('name'))
+        }
+        function goFight(ids){
+            $.ajax({
+                url:'/fight',
+                data: {robot1_id:ids[0],robot2_id:ids[1]},
+                dataType:'json',
+                method:'post',
+                success:function (json){
+                    setTimeout(function (){
+                        if (json['winner']){
+                            $('.fighter-box').find('img').attr('src','/image/loser.gif')
+                            $('[data-fighter="fighter'+json['winner']['id']+'"]').find('img').attr('src','/image/robo_winner.jpg')
+                        }
+                        if (json['error']){
+                            alert(json['error'])
+                        }
+                    },3000)
+                },error:function (xhr){
+                    console.log(xhr)
+                }
+            })
+        }
+
+
+    </script>
+{% endblock %}

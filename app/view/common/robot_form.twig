@@ -1,0 +1,43 @@
+{% extends '/layout/app.twig' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+           <div class="card mt-5">
+               <form action="" method="post">
+                   <div class="card-body">
+                       <div class="form-group">
+                           <label for="input-name">Név</label>
+                           <input type="text" name="name" value="{{ name }}" class="form-control" id="input-name" />
+                           {% if error.name %}
+                               <span class="input-error">{{ error.name }}</span>
+                           {% endif %}
+                       </div>
+                       <div class="form-group">
+                           <label for="input-type">Típus</label>
+                           <select name="type" id="input-type" class="form-control">
+                               {% for typeL in types %}
+                                   <option value="{{ typeL }}" {% if typeL == type  %} selected {% endif %}>{{ typeL }}</option>
+                               {% endfor %}
+                           </select>
+                       </div>
+                       <div class="form-group">
+                           <label for="input-name">Erő</label>
+                           <input type="number" name="power" value="{{ power }}" class="form-control" id="input-name" />
+                           {% if error.power %}
+                               <span class="input-error">{{ error.power }}</span>
+                           {% endif %}
+                       </div>
+                   </div>
+                   <div class="card-footer">
+                       <a href="/" class="btn btn-primary">Mégse</a>
+                       <button type="submit" class="btn btn-success">Ment</button>
+                   </div>
+               </form>
+           </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
